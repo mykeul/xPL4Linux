@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if _MSC_VER
+#include "msvc-compat.h"
+#endif/*_MSC_VER*/
+
 #define GROW_LIST_BY 16
 
 typedef struct {

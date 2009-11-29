@@ -4,16 +4,21 @@
 #include "xPL.h"
 #include "xPL_priv.h"
 
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#if _MSC_VER
+#include "msvc-compat.h"
+#else/*_MSC_VER*/
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
-#include <errno.h>
 #include <netdb.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include <unistd.h>
+#endif/*_MSC_VER*/
 
 typedef struct {
   int clientPort;
@@ -38,6 +43,7 @@ static int localIPAddrCount = 0;
 static String *localIPAddrs = NULL;
 
 static void buildLocalIPList() {
+#ifndef _MSC_VER
   int ifIndex, localIndex;
   struct ifconf interfaceList;
   struct ifreq * ifInfo;
@@ -81,6 +87,7 @@ static void buildLocalIPList() {
     localIPAddrs[localIPAddrCount++] = xPL_StrDup(inet_ntoa(((struct sockaddr_in *) &(ifInfo->ifr_addr))->sin_addr));
     xPL_Debug("  Found %s", localIPAddrs[localIPAddrCount - 1]);
   }
+#endif/*_MSC_VER*/
 }
 
 /* Return TRUE if the received heartbeat message is on our local host */
@@ -247,7 +254,7 @@ static hubClientPtr addNewClient(xPL_MessagePtr theMessage, int clientPort, int 
   }
 
   /* Mark as a broadcasting socket */
-  if (setsockopt(theClient->clientSocket, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag)) < 0) {
+  if (setsockopt(theClient->clientSocket, SOL_SOCKET, SO_BROADCAST, (const char*)&flag, sizeof(flag)) < 0) {
     xPL_Debug("Unable to set SO_BROADCAST on socket %s (%d) -- cannot setup new client", strerror(errno), errno);
     close(theClient->clientSocket);
     clientCount--;
@@ -406,7 +413,8 @@ static void handleXPLMessage(xPL_MessagePtr theMessage, xPL_ObjectPtr userValue)
 /* last heard from it.  If it's twice as long as the heartbeat */
 /* interval we expect, declare them dead and remove them       */
 static void doClientTimeoutChecks(int actualElapsedTime, xPL_ObjectPtr userValue) {
-  int clientIndex, elapsedTime;
+  int clientIndex;
+  time_t elapsedTime;
   time_t rightNow = time(NULL);
   hubClientPtr theClient;
 

@@ -4,18 +4,24 @@
 #include "xPL.h"
 #include "xPL_priv.h"
 
-#include <arpa/inet.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <netdb.h>
-#include <poll.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#ifdef _MSC_VER
+#include <iphlpapi.h>
+#include "msvc-compat.h"
+#else/*_MSC_VER*/
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <netdb.h>
+#include <poll.h>
+#include <stdint.h>
 #include <unistd.h>
+#endif/*_MSC_VER*/
 
 #define POLL_GROW_BY 32
 
@@ -97,7 +103,9 @@ static void longToBase32(unsigned long theValue, String theBuffer) {
 String xPL_getFairlyUniqueIdent() {
   char newIdent[32];
   uint32_t localAddr;
+#ifndef _MSC_VER
   struct timeval rightNow;
+#endif/*_MSC_VER*/
   unsigned long timeInMillis;
 
   /* First time around, format the prefix ident */
@@ -111,8 +119,12 @@ String xPL_getFairlyUniqueIdent() {
 
   /* Now tack on the time of day, radix-32 encoded (which allows   */
   /* packing in a lot more uniqueness for the 8 characters we have */
+#ifdef _MSC_VER
+  timeInMillis = GetTickCount();
+#else/*_MSC_VER*/
   gettimeofday(&rightNow, NULL);
   timeInMillis = (rightNow.tv_sec * 1000) + (rightNow.tv_usec / 1000);
+#endif/*_MSC_VER*/
   strcpy(newIdent, uniqueIDPrefix);
   longToBase32(timeInMillis, newIdent);
   if (strlen(newIdent) > 16) newIdent[16] = '\0';
@@ -259,12 +271,17 @@ void xPL_setBroadcastInterface(String newInterfaceName) {
 
 /* Make a fd non-blocking */
 static Bool markNonblocking(int thefd) {
+#ifdef _MSC_VER
+  u_long theValue = 1;
+  return(ioctlsocket(thefd, FIONBIO, &theValue) == 0);
+#else/*_MSC_VER*/
   int theValue;
 
   if ((theValue = fcntl(thefd, F_GETFL, 0)) != -1) {
     return (fcntl(thefd, F_SETFL, theValue|O_NONBLOCK) != -1);
   } else
     return FALSE;
+#endif/*_MSC_VER*/
 }
 
 /* Try to increase the receive buffer as big as possible.  if */
@@ -274,7 +291,7 @@ static Bool maximizeReceiveBufferSize(int thefd) {
   socklen_t buffLen = sizeof(int);
 
   /* Get current receive buffer size */
-  if (getsockopt(thefd, SOL_SOCKET, SO_RCVBUF, &startRcvBuffSize, &buffLen) != 0) 
+  if (getsockopt(thefd, SOL_SOCKET, SO_RCVBUF, (char*)&startRcvBuffSize, &buffLen) != 0) 
     xPL_Debug("Unable to read receive socket buffer size - %s (%d)", strerror(errno), errno);
   else
     xPL_Debug("Initial receive socket buffer size is %d bytes", startRcvBuffSize);
@@ -282,7 +299,7 @@ static Bool maximizeReceiveBufferSize(int thefd) {
   /* Try to increase the buffer (maybe multiple times) */
   for (idealRcvBuffSize = 1024000; idealRcvBuffSize > startRcvBuffSize; ) {
     /* Attempt to set the buffer size */
-    if (setsockopt(thefd, SOL_SOCKET, SO_RCVBUF, &idealRcvBuffSize, sizeof(int)) != 0) {
+    if (setsockopt(thefd, SOL_SOCKET, SO_RCVBUF, (const char*)&idealRcvBuffSize, sizeof(int)) != 0) {
       xPL_Debug("Not able to set receive buffer to %d bytes - retrying", idealRcvBuffSize);
       idealRcvBuffSize -= 64000;
       continue;
@@ -290,7 +307,7 @@ static Bool maximizeReceiveBufferSize(int thefd) {
 
     /* We did it!  Get the current size and bail out */
     buffLen = sizeof(int);
-    if (getsockopt(thefd, SOL_SOCKET, SO_RCVBUF, &finalRcvBuffSize, &buffLen) != 0) 
+    if (getsockopt(thefd, SOL_SOCKET, SO_RCVBUF, (char*)&finalRcvBuffSize, &buffLen) != 0) 
       xPL_Debug("Unable to read receive socket buffer size - %s (%d)", strerror(errno), errno);
     else
       xPL_Debug("Actual receive socket buffer size is %d bytes", finalRcvBuffSize);
@@ -329,14 +346,14 @@ static Bool attemptStandaloneConnection() {
   }
 
   /* Allow re-use and restart */
-  if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag)) < 0) {
+  if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const char*)&flag, sizeof(flag)) < 0) {
     xPL_Debug("Unable to set SO_REUSEADDR on socket %s (%d)", strerror(errno), errno);
     close(sockfd);
     return FALSE;
   }
 
   /* Mark as a broadcast socket */
-  if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag)) < 0) {
+  if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const char*)&flag, sizeof(flag)) < 0) {
     xPL_Debug("Unable to set SO_BROADCAST on socket %s (%d)", strerror(errno), errno);
     close(sockfd);
     return FALSE;
@@ -384,7 +401,7 @@ static Bool attempHubConnection() {
   }
 
   /* Mark as a broadcast socket */
-  if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag)) < 0) {
+  if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const char*)&flag, sizeof(flag)) < 0) {
     xPL_Debug("Unable to set SO_BROADCAST on socket %s (%d)", strerror(errno), errno);
     close(sockfd);
     return FALSE;
@@ -441,6 +458,51 @@ static Bool makeConnection(xPL_ConnectType theConnectType) {
 /* found, then return FALSE.  Otherwise, install the name as */
 /* the xPL interface and return TRUE                         */
 static Bool findDefaultInterface(int sockfd) {
+#ifdef _MSC_VER
+  PIP_ADAPTER_INFO interfaceInfo = NULL;
+  PIP_ADAPTER_INFO interfaceInfoIt;
+  ULONG interfaceInfoSize;
+  if(GetAdaptersInfo(interfaceInfo, &interfaceInfoSize) != ERROR_BUFFER_OVERFLOW)
+  {
+	xPL_Error("GetAdaptersInfo failed (first call)");
+	close(sockfd);
+	return FALSE;
+  }
+  if(!(interfaceInfo = malloc(interfaceInfoSize)))
+  {
+	xPL_Error("malloc(IP_ADAPTER_INFO) failed");
+	close(sockfd);
+	return FALSE;
+  }
+  bzero(interfaceInfo, interfaceInfoSize);
+  switch(GetAdaptersInfo(interfaceInfo, &interfaceInfoSize))
+  {
+  case NO_ERROR:
+	  break;
+  default:
+	xPL_Error("GetAdaptersInfo failed (second call)");
+	free(interfaceInfo);
+	close(sockfd);
+	return FALSE;
+  }
+  for(interfaceInfoIt = interfaceInfo ; interfaceInfoIt != NULL ; interfaceInfoIt = interfaceInfoIt->Next)
+  {
+	switch(interfaceInfoIt->Type)
+	{
+	case MIB_IF_TYPE_ETHERNET:
+	case 71://MIB_IF_TYPE_IEEE_802_11
+	  break;
+	default:
+	  continue;
+	}
+    /* If successful, use this interface */
+	strcpy(xPLInterfaceName, interfaceInfoIt->AdapterName);
+    xPL_Debug("Choose interface %s as default interface", xPLInterfaceName);
+    free(interfaceInfo);
+    return TRUE;
+  }
+  free(interfaceInfo);
+#else/*_MSC_VER*/
   char intBuff[1024];
   struct ifconf ifc;
   struct ifreq *ifr;
@@ -476,18 +538,23 @@ static Bool findDefaultInterface(int sockfd) {
     xPL_Debug("Choose interface %s as default interface", xPLInterfaceName);
     return TRUE;
   }
-
+#endif/*_MSC_VER*/
   /* No good interface found */
   return FALSE;
 }
-
 
 /* Create a socket for broadcasting messages */
 static Bool setupBroadcastAddr() {
   int sockfd;
   int flag = 1;
   struct protoent *ppe;
+#ifdef _MSC_VER
+  PIP_ADAPTER_INFO interfaceInfo = NULL;
+  PIP_ADAPTER_INFO interfaceInfoIt;
+  ULONG interfaceInfoSize;
+#else/*_MSC_VER*/
   struct ifreq interfaceInfo;
+#endif/*_MSC_VER*/
   struct in_addr interfaceNetmask;  
   
   /* Map protocol name */
@@ -503,7 +570,7 @@ static Bool setupBroadcastAddr() {
   }
 
   /* Mark as a broadcasting socket */
-  if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag)) < 0) {
+  if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const char*)&flag, sizeof(flag)) < 0) {
     xPL_Error("Unable to set SO_BROADCAST on socket %s (%d)", strerror(errno), errno);
     close(sockfd);
     return FALSE;
@@ -518,6 +585,47 @@ static Bool setupBroadcastAddr() {
     }
   }
 
+#ifdef _MSC_VER
+  if(GetAdaptersInfo(interfaceInfo, &interfaceInfoSize) != ERROR_BUFFER_OVERFLOW)
+  {
+	xPL_Error("GetAdaptersInfo failed (first call)");
+	close(sockfd);
+	return FALSE;
+  }
+  if(!(interfaceInfo = malloc(interfaceInfoSize)))
+  {
+	xPL_Error("malloc(IP_ADAPTER_INFO) failed");
+	close(sockfd);
+	return FALSE;
+  }
+  bzero(interfaceInfo, interfaceInfoSize);
+  switch(GetAdaptersInfo(interfaceInfo, &interfaceInfoSize))
+  {
+  case NO_ERROR:
+	  break;
+  default:
+	xPL_Error("GetAdaptersInfo failed (second call)");
+	free(interfaceInfo);
+	close(sockfd);
+	return FALSE;
+  }
+  for(interfaceInfoIt = interfaceInfo ; interfaceInfoIt != NULL ; interfaceInfoIt = interfaceInfoIt->Next)
+  {
+	switch(interfaceInfoIt->Type)
+	{
+	case MIB_IF_TYPE_ETHERNET:
+	case 71://MIB_IF_TYPE_IEEE_802_11
+	  break;
+	default:
+	  continue;
+	}
+	xPLInterfaceAddr.s_addr = inet_addr(interfaceInfoIt->IpAddressList.IpAddress.String);
+	interfaceNetmask.s_addr = inet_addr(interfaceInfoIt->IpAddressList.IpMask.String);
+    xPL_Debug("Auto-assigning IP address of %s", inet_ntoa(xPLInterfaceAddr));
+	break;
+  }
+  free(interfaceInfo);
+#else//_MSC_VER
   /* Init the interface info request */
   bzero(&interfaceInfo, sizeof(struct ifreq));
   interfaceInfo.ifr_addr.sa_family = AF_INET; 
@@ -543,6 +651,7 @@ static Bool setupBroadcastAddr() {
     return FALSE;
   }
   interfaceNetmask.s_addr = ((struct sockaddr_in *) &interfaceInfo.ifr_netmask)->sin_addr.s_addr;  
+#endif/*_MSC_VER*/
 
   /* Build our broadcast addr */
   bzero(&xPLBroadcastAddr, sizeof(xPLBroadcastAddr));
@@ -577,8 +686,22 @@ Bool xPL_sendRawMessage(String theData, int dataLen) {
 /* Attempt to start the xPL library.  If we are already "started" */
 /* then bail out                                                  */
 Bool xPL_initialize(xPL_ConnectType theConnectType) {
+#ifdef _MSC_VER
+  WSADATA wsaData;
+  int iResult;
+#endif/*_MSC_VER*/
+
   /* If running, we have nothing to do */
   if (xPLFD != -1) return FALSE;
+
+#ifdef _MSC_VER
+  // Initialize Winsock
+  iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+  if (iResult != 0) {
+    xPL_Debug("WSAStartup failed: %d", iResult);
+    return FALSE;
+  }
+#endif/*_MSC_VER*/
   
   /* Setup the broadcasting address */
   if (!setupBroadcastAddr()) return FALSE;
@@ -627,13 +750,13 @@ Bool xPL_shutdown() {
 /* Check for any registered timeouts */
 static void checkAllTimeoutHandlers() {
   int timeoutIndex;
-  int elapsedTime;
+  time_t elapsedTime;
   time_t rightNow = time(NULL);
 
   for (timeoutIndex = timeoutCount - 1; timeoutIndex >= 0; timeoutIndex--) {
     elapsedTime = rightNow - timeoutList[timeoutIndex].lastTimedoutAt;
     if (elapsedTime >= timeoutList[timeoutIndex].timeoutInterval) {
-      timeoutList[timeoutIndex].timeoutHandler(elapsedTime, timeoutList[timeoutIndex].userValue);
+      timeoutList[timeoutIndex].timeoutHandler((int)elapsedTime, timeoutList[timeoutIndex].userValue);
       timeoutList[timeoutIndex].lastTimedoutAt = rightNow;
     }
   }

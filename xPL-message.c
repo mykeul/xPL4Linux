@@ -4,11 +4,16 @@
 #include "xPL.h"
 #include "xPL_priv.h"
 
-#include <sys/socket.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if _MSC_VER
+#include "msvc-compat.h"
+#else/*_MSC_VER*/
+#include <sys/socket.h>
+#endif/*_MSC_VER*/
 
 #define WRITE_TEXT(x) if (!appendText(x)) return FALSE;
 
@@ -904,9 +909,13 @@ void xPL_receiveMessage(int theFD, int thePollInfo, xPL_ObjectPtr userValue) {
 
   for (;;) {
     /* Fetch the next message, if any */
-    if ((bytesRead = recvfrom(xPLFD, &messageBuff, MSG_BUFF_SIZE - 1, 0, NULL, NULL)) < 0) {
+    if ((bytesRead = recvfrom(xPLFD, messageBuff, MSG_BUFF_SIZE - 1, 0, NULL, NULL)) < 0) {
       /* Expected response when queue is empty */
+#ifdef _MSC_VER
+	  if (WSAGetLastError() == WSAEWOULDBLOCK) return;
+#else/*_MSC_VER*/
       if (errno == EAGAIN) return;
+#endif/*_MSC_VER*/
       
       /* Note the error and bail */
       xPL_Debug("Error reading xPL message from network - %s (%d)", strerror(errno), errno);

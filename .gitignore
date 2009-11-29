@@ -1,0 +1,12 @@
+CMakeCache.txt
+CMakeFiles
+Debug
+ipch
+Makefile
+Win32
+*.cmake
+*.dir
+*.*sdf
+*.sln
+*.suo
+*.vcxproj*

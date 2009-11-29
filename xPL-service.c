@@ -7,7 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#if _MSC_VER
+#include "msvc-compat.h"
+#else/*_MSC_VER*/
 #include <unistd.h>
+#endif/*_MSC_VER*/
 
 #define GROW_SERVICE_LIST_BY 8
 
@@ -116,7 +121,7 @@ void xPL_sendTimelyHeartbeats() {
   xPL_ServicePtr theService;
   int serviceIndex;
   time_t rightNow = time(NULL);
-  int timeElapsed;
+  time_t timeElapsed;
 
   for (serviceIndex = 0; serviceIndex < serviceCount; serviceIndex++) {
     theService = serviceList[serviceIndex];

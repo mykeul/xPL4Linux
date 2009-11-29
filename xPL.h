@@ -1,7 +1,11 @@
 /* xPL.h - xPL Public API */
 /* Copyright 2004 (c), Gerald R Duprey Jr */
 
+#if _MSC_VER
+#include <crtdefs.h>
+#else/*_MSC_VER*/
 #include <sys/time.h>
+#endif/*_MSC_VER*/
 
 #define XPLLIB_VERSION "V1.3a"
 
