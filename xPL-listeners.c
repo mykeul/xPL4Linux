@@ -3,7 +3,9 @@
 
 #include "xPL.h"
 #include "xPL_priv.h"
-#include <stdarg.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #define GROW_LIST_BY 16
 

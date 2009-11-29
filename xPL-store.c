@@ -4,6 +4,7 @@
 #include "xPL_priv.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #define STRING_CACHE_MAX 256
 #define GROW_CACHE_BY 16

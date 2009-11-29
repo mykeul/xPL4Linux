@@ -1,12 +1,17 @@
 /* xPL_Hub.c -- Implementation of an xPL Hub using xPLLib */
 /* Copyright (c) 2004, Gerald R Duprey Jr. */
 
+#include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <syslog.h>
 #include <stdarg.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 
 #include "../xPL.h"

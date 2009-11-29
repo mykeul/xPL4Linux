@@ -3,8 +3,10 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <signal.h>
+#include <string.h>
 #include "../xPL.h"
 
 char msgSource[64] = "cdp1802-xplsend.default";

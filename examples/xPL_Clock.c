@@ -2,6 +2,7 @@
 /* Copyright (c) 2004, Gerald R. Duprey Jr. */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <signal.h>
 #include "../xPL.h"

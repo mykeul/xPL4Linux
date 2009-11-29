@@ -1,6 +1,8 @@
 /* xPL_priv.h - xPLLib internal include */
 /* Copyright 2004 (c), Gerald R Duprey Jr */
 
+#include <unistd.h>
+
 #define SAFE_FREE(x) if (x != NULL) { free(x); x = NULL; }
 #define STR_FREE(x) if (x != NULL) { xPL_FreeStr(x); x = NULL; }
 

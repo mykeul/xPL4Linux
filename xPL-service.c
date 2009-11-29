@@ -4,6 +4,11 @@
 #include "xPL.h"
 #include "xPL_priv.h"
 
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+
 #define GROW_SERVICE_LIST_BY 8
 
 static int serviceCount = 0;

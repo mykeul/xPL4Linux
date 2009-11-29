@@ -1,10 +1,14 @@
 /* xPL-utils.c - misc support for xPLLib */
 /* Copyright 2004 (c), Gerald R Duprey Jr */
 
-#include <stdio.h>
-#include <stdarg.h>
 #include "xPL.h"
 #include "xPL_priv.h"
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 /* static buffer to create log messages */
 #define LOG_BUFF_MAX 512

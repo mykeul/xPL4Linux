@@ -4,6 +4,8 @@
 /* Copyright (c) 2005, Gerald R. Duprey Jr. */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <signal.h>
 #include "../xPL.h"

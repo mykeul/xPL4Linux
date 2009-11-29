@@ -1,10 +1,14 @@
 /* xPL-message.c - xPL Message support functions */
 /* Copyright 2004 (c) , Gerald R Duprey Jr */
 
-#include <stdarg.h>
-#include <sys/socket.h>
 #include "xPL.h"
 #include "xPL_priv.h"
+
+#include <sys/socket.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define WRITE_TEXT(x) if (!appendText(x)) return FALSE;
 

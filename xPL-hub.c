@@ -1,26 +1,19 @@
 /* xPL-hub.c -- built-in xPL hub support */
 /* Copyright (c) 2004, Gerald R Duprey Jr. */
 
-#include <stdio.h>
-#include <time.h>
-#include <signal.h>
-#include <errno.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <termios.h>
-
 #include "xPL.h"
 #include "xPL_priv.h"
+
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <netdb.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 typedef struct {
   int clientPort;

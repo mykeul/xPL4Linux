@@ -1,27 +1,21 @@
 /* xPL-io.c - xPL I/O handling */
 /* Copyright 2004 (c), Gerald R Duprey Jr */
 
-#include <errno.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <poll.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <sys/poll.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <time.h>
-#include <netdb.h>
-#include <termios.h>
-
 #include "xPL.h"
 #include "xPL_priv.h"
+
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <poll.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 #define POLL_GROW_BY 32
 

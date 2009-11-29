@@ -1,10 +1,13 @@
 /* xPL-config.c -- Configuration support for xPL services */
 /* Copyright (c) 2004, Gerald R Duprey Jr.  */
 
-#include <stdio.h>
-
 #include "xPL.h"
 #include "xPL_priv.h"
+
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define GROW_CONFIG_LIST_BY 4
 

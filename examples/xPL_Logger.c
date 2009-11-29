@@ -2,7 +2,10 @@
 /* Copyright (c) 2004, Gerald R. Duprey Jr. */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
+#include <string.h>
+#include <time.h>
 #include "../xPL.h"
 
 #define LOGGER_VERSION "1.1"
