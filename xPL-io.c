@@ -491,6 +491,8 @@ static Bool findDefaultInterface(int sockfd) {
 	{
 	case MIB_IF_TYPE_ETHERNET:
 	case 71://MIB_IF_TYPE_IEEE_802_11
+	  if(strcmp(interfaceInfoIt->IpAddressList.IpAddress.String, "0.0.0.0") == 0)
+		continue;
 	  break;
 	default:
 	  continue;
@@ -615,6 +617,8 @@ static Bool setupBroadcastAddr() {
 	{
 	case MIB_IF_TYPE_ETHERNET:
 	case 71://MIB_IF_TYPE_IEEE_802_11
+	  if(strcmp(interfaceInfoIt->IpAddressList.IpAddress.String, "0.0.0.0") == 0)
+		continue;
 	  break;
 	default:
 	  continue;
