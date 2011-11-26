@@ -69,13 +69,13 @@ static void sendServiceConfigList(xPL_ServicePtr theService) {
       /* Allocate a string and format it */
       configName = xPL_StrAlloc(allocSize);
       sprintf(configName, "%s[%d]", configurable->itemName, configurable->maxValueCount);
-      
-      /* Free temp string, if any */
-      if (configName != configurable->itemName) STR_FREE(configName);
     }
 
     /* Add the item in */
     xPL_addMessageNamedValue(theMessage, configType, configName);
+      
+    /* Free temp string, if any */
+    if (configName != configurable->itemName) STR_FREE(configName);
   }
 
   /* Send out the message */
