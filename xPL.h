@@ -334,8 +334,8 @@ extern String xPL_getListenerIPAddr();
 extern Bool xPL_processMessages(int);
 
 /* Event handler for user-registered I/O management */
-typedef void (* xPL_IOHandler)(int, int, int);
-extern Bool xPL_addIODevice(xPL_IOHandler, int, int, Bool, Bool, Bool);
+typedef void (* xPL_IOHandler)(int, int, xPL_ObjectPtr);
+extern Bool xPL_addIODevice(xPL_IOHandler, xPL_ObjectPtr, int, Bool, Bool, Bool);
 extern Bool xPL_removeIODevice(int);
 
 /* Event management of user timeouts */

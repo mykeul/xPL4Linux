@@ -894,7 +894,7 @@ static Bool isHubEcho(xPL_MessagePtr theMessage) {
 }
 
 /* Read, parse and dispatch an xPL message */
-void xPL_receiveMessage(int theFD, int thePollInfo, int userValue) {
+void xPL_receiveMessage(int theFD, int thePollInfo, xPL_ObjectPtr userValue) {
   int bytesRead;
   xPL_MessagePtr theMessage = NULL;
 

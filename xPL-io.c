@@ -28,7 +28,7 @@
 /* User defined data for each poll entry */
 typedef struct _pollUserInfo {
   xPL_IOHandler ioHandler;
-  int userValue;
+  xPL_ObjectPtr userValue;
 } _pollUserInfo, *pollUserInfoPtr;
 
 /* Just to make things a bit cleaner */
@@ -134,7 +134,7 @@ String xPL_getFairlyUniqueIdent() {
 /* integer passed directly to the ioHandler, frequently used to track */
 /* context information. watchRead, watchWrite, watchError tell what   */
 /* sort of things need to be monitored.                               */
-Bool xPL_addIODevice(xPL_IOHandler theIOHandler, int userValue, int theFD, Bool watchRead, Bool watchWrite, Bool watchError) {
+Bool xPL_addIODevice(xPL_IOHandler theIOHandler, xPL_ObjectPtr userValue, int theFD, Bool watchRead, Bool watchWrite, Bool watchError) {
   /* Make sure they are going to really do something */
   if (!watchRead && !watchWrite && !watchError) return FALSE;
 
@@ -597,7 +597,7 @@ Bool xPL_initialize(xPL_ConnectType theConnectType) {
 
   /* Install a listener for xPL oriented messages */
   if (!xPL_IODeviceInstalled) {
-    if (xPL_addIODevice(xPL_receiveMessage, -1, xPLFD, TRUE, FALSE, FALSE))
+    if (xPL_addIODevice(xPL_receiveMessage, (xPL_ObjectPtr)(-1), xPLFD, TRUE, FALSE, FALSE))
       xPL_IODeviceInstalled = TRUE;
   }
 

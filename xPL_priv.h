@@ -24,7 +24,7 @@ extern void xPL_disableAllServices();
 
 
 /* xPL-message.c */
-extern void xPL_receiveMessage(int, int, int);
+extern void xPL_receiveMessage(int, int, xPL_ObjectPtr);
 
 /* xPL-listeners.c */
 extern Bool xPL_dispatchRawEvent(String, int);
