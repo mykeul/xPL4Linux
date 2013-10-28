@@ -42,8 +42,7 @@ void xPL_Debug(String theFormat, ...) {
   vsprintf(&logMessageBuffer[strlen(logMessageBuffer)], theFormat, theParms);
 
   /* Write to the console or system log file */
-  strcat(logMessageBuffer, "\n");
-  fprintf(stderr, logMessageBuffer);
+  fprintf(stderr, "%s\n", logMessageBuffer);
 
   /* Release parms */
   va_end(theParms);
@@ -66,8 +65,7 @@ void xPL_Error(String theFormat, ...) {
   vsprintf(&logMessageBuffer[strlen(logMessageBuffer)], theFormat, theParms);
 
   /* Write to the console or system log file */
-  strcat(logMessageBuffer, "\n");
-  fprintf(stderr, logMessageBuffer);
+  fprintf(stderr, "%s\n", logMessageBuffer);
 
   /* Release parms */
   va_end(theParms);

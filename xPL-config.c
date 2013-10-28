@@ -665,8 +665,7 @@ static Bool xPL_saveServiceConfig(xPL_ServicePtr theService) {
     }
 
     /* Write the item */
-    strcat(lineBuff, "\n");
-    fprintf(configFile, lineBuff);
+    fprintf(configFile, "%s\n", lineBuff);
   }
 
   /* Now write current values out */
