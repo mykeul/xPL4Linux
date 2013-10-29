@@ -1,0 +1,47 @@
+Source: xpl4linux
+Priority: extra
+Maintainer: Mickaël Remars <debian@remars.com>
+Build-depends: cmake, debhelper (>= 9~)
+Section: electronics
+Homepage: https://github.com/mykeul/xPL4Linux
+Vcs-Git: https://github.com/mykeul/xPL4Linux.git
+
+Package: libxpl
+Section: libs
+Architecture: any
+Pre-Depends: multiarch-support
+Multi-Arch: same
+Description: xPL library (runtime)
+ xPL is an open protocol intended to permit the control and monitoring of home automation devices.
+ .
+ This package includes the xPL library that is able to talk to the xPL network.
+
+Package: libxpl-dev
+Section: libdevel
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libxpl (= ${binary:Version})
+Description: xPL library (development files)
+ xPL is an open protocol intended to permit the control and monitoring of home automation devices.
+ .
+ This package includes C header files.
+
+Package: xpl-hub
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libxpl (= ${binary:Version})
+Description: xPL hub
+ xPL is an open protocol intended to permit the control and monitoring of home automation devices.
+ .
+ An xPL hub is the glue that connects multiple xPL applications together,
+ by passing xPL messages it receives to all clients that are connected to it.
+
+Package: xpl-send
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libxpl (= ${binary:Version}),
+ xpl-hub (= ${binary:Version})
+Description: Command-line interface to send xPL messages
+ xPL is an open protocol intended to permit the control and monitoring of home automation devices.
+ .
+ A command-line interface to send xPL messages.

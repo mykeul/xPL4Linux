@@ -1,0 +1,33 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          xPL-hub
+# Required-Start:    $networking
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: xPL-hub
+# Description:       xPL-hub
+### END INIT INFO
+
+. /etc/default/xpl-hub
+
+NAME=xPL-hub
+
+case "$1" in
+  start)
+    su nobody -c "/usr/bin/xPL-hub $XPLHUB_OPTS"
+    ;;
+  stop)
+    killall -TERM xPL-hub
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+  *)
+    echo "Usage: $NAME {start|stop|restart}" >&2
+    exit 3
+    ;;
+esac
+
+:
