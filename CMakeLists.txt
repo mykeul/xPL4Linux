@@ -25,3 +25,6 @@ IF(WIN32)
 	)
 ENDIF(WIN32)
 
+subdirs(
+	examples
+)
