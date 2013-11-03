@@ -84,7 +84,7 @@ void printTimestamp() {
 
   time(&rightNow);
   strftime(dateTimeBuffer, 40, "%y/%m/%d %H:%M:%S ", localtime(&rightNow));
-  fprintf(logFile, dateTimeBuffer);
+  fprintf(logFile, "%s", dateTimeBuffer);
 }
 
 /* Print info on incoming messages */

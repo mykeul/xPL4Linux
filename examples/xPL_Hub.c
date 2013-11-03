@@ -62,10 +62,9 @@ static void writeMessage(int msgType, String theFormat, va_list theParms) {
 
   /* Write to the console or system log file */
   if (daemonMode)
-    syslog(msgType, logMessageBuffer);
+    syslog(msgType, "%s", logMessageBuffer);
   else {
-    strcat(logMessageBuffer, "\n");
-    fprintf(stderr, logMessageBuffer);
+    fprintf(stderr, "%s\n", logMessageBuffer);
   }
 }
 
