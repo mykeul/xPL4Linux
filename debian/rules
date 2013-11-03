@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+
+#export DH_VERBOSE=1
+#export DH_VERBOSE=2
+
+%:
+	dh $@ $(DH_OPTIONS)
+
+clean:
+	dh clean $(DH_OPTIONS)
+	$(RM) CMakeCache.txt cmake_install.cmake Makefile
+	$(RM) -R CMakeFiles
+	$(RM) -R obj-*
+
+override_dh_install:
+	mkdir -p $(CURDIR)/debian/libxpl/usr/lib/$(DEB_HOST_MULTIARCH)/
+	cp $(CURDIR)/obj-*/libxPL.so $(CURDIR)/debian/libxpl/usr/lib/$(DEB_HOST_MULTIARCH)/
+	cp $(CURDIR)/obj-*/libxPL_static.a $(CURDIR)/debian/libxpl/usr/lib/$(DEB_HOST_MULTIARCH)/libxPL.a
+	mkdir -p $(CURDIR)/debian/libxpl-dev/usr/include/
+	cp $(CURDIR)/xPL.h $(CURDIR)/debian/libxpl-dev/usr/include/
+	mkdir -p $(CURDIR)/debian/xpl-hub/usr/bin/
+	cp $(CURDIR)/obj-*/examples/xPL-hub $(CURDIR)/debian/xpl-hub/usr/bin/
+	mkdir -p $(CURDIR)/debian/xpl-send/usr/bin/
+	cp $(CURDIR)/obj-*/examples/xPL-send $(CURDIR)/debian/xpl-send/usr/bin/
+	dh_install --fail-missing
