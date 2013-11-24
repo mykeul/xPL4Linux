@@ -29,6 +29,10 @@ IF(WIN32)
 		iphlpapi
 		ws2_32
 	)
+	TARGET_LINK_LIBRARIES(xPL_static
+		iphlpapi
+		ws2_32
+	)
 ENDIF(WIN32)
 
 subdirs(
