@@ -35,6 +35,8 @@ IF(WIN32)
 	)
 ENDIF(WIN32)
 
-subdirs(
-	examples
-)
+IF(UNIX)
+	subdirs(
+		examples
+	)
+ENDIF(UNIX)
