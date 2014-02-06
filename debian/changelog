@@ -1,3 +1,9 @@
+xpl4linux (20140206-1) unstable; urgency=low
+
+  * compiles on amd64 arch (-fPIC)
+
+ -- Mickaël Remars <debian@remars.com>  Thu, 06 Feb 2014 20:45:00 +0100
+
 xpl4linux (20131103-0) unstable; urgency=low
 
   * Initial release
