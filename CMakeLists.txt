@@ -5,6 +5,10 @@ ADD_DEFINITIONS(
 	-D_CRT_SECURE_NO_WARNINGS
 )
 
+IF(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+ENDIF()
+
 ADD_LIBRARY(xPL_obj OBJECT
 	msvc-compat.c
 	msvc-compat.h
@@ -29,8 +33,14 @@ IF(WIN32)
 		iphlpapi
 		ws2_32
 	)
+	TARGET_LINK_LIBRARIES(xPL_static
+		iphlpapi
+		ws2_32
+	)
 ENDIF(WIN32)
 
-subdirs(
-	examples
-)
+IF(UNIX)
+	subdirs(
+		examples
+	)
+ENDIF(UNIX)
