@@ -302,6 +302,7 @@ extern xPL_MessagePtr xPL_createBroadcastMessage(xPL_ServicePtr, xPL_MessageType
 extern void xPL_releaseMessage(xPL_MessagePtr);
 
 extern Bool xPL_sendMessage(xPL_MessagePtr);
+extern Bool xPL_sendRawMessage(String, int);
 
 extern void xPL_addServiceListener(xPL_ServicePtr, xPL_ServiceListener, xPL_MessageType, String, String, xPL_ObjectPtr);
 extern Bool xPL_removeServiceListener(xPL_ServicePtr, xPL_ServiceListener);
