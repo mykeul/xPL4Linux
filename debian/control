@@ -18,7 +18,7 @@ Description: xPL library (runtime)
 
 Package: libxpl-dev
 Section: libdevel
-Architecture: all
+Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libxpl (= ${binary:Version})
 Description: xPL library (development files)

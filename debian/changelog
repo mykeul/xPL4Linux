@@ -1,3 +1,9 @@
+xpl4linux (20140206-2) unstable; urgency=low
+
+  * set libxl-dev's architecture to any
+
+ -- Mickaël Remars <debian@remars.com>  Sat, 08 Feb 2014 11:03:00 +0100
+
 xpl4linux (20140206-1) unstable; urgency=low
 
   * compiles on amd64 arch (-fPIC)
