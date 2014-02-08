@@ -39,7 +39,6 @@ extern Bool xPL_dispatchServiceEvent(xPL_ServicePtr, xPL_MessagePtr);
 extern Bool xPL_dispatchServiceConfigChangedEvent(xPL_ServicePtr);
 
 /* xPL-io.c */
-extern Bool xPL_sendRawMessage(String, int);
 extern String xPL_getFairlyUniqueIdent();
 
 /* xPL-store.c */
