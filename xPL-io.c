@@ -803,6 +803,7 @@ Bool xPL_processMessages(int theTimeout) {
   int timeoutsSoFar = 0;
 
   for(;xPLFD != -1;) {
+    timeoutDone = FALSE;
     /* Compute the timeout */
     if (theTimeout > 0) {
       /* If the timeout is more than once per second, we cap this to */
@@ -860,6 +861,7 @@ Bool xPL_processMessages(int theTimeout) {
       /* processed all known active devices this time around.       */
       if (!(--activeDevices)) break;
     }
+    if (!timeoutDone) doTimeouts();
   }
 
   /* Return final status */
