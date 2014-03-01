@@ -1,3 +1,10 @@
+xpl4linux (20140301-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixed xPL-hub not expiring its clients on loaded networks (more than 1 message per second, 24/7)
+
+ -- Mickaël Remars <debian@remars.com>  Sat, 01 Mar 2014 14:37:00 +0100
+
 xpl4linux (20140208-1) unstable; urgency=low
 
   * exposes xPL_sendRawMessage() in xPL.h
